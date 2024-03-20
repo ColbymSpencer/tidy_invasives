@@ -1,0 +1,30 @@
+---
+title: "tidy invasives"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+## setup
+```{r setup}
+library(tidyverse)
+library(janitor)
+library(readr)
+
+treatments <- read_tsv("C:/Users/Spencer_C/Desktop/NRTSy/RPT_TREATMENT_DETAILS_VW_DATA_VIEW.tsv") |>
+  clean_names()
+```
+
+```{r explore}
+multis <- treatments |>
+  count(treatment_date, infestation_area_id, scientific_name, sort  = TRUE) |>
+  filter(n != 1) |>
+  head(3) |>
+  select(-4)
+
+semi_join(treatments, multis) |>
+  view()
+  
+```
+
