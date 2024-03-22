@@ -7,16 +7,32 @@ editor_options:
 ---
 
 ## setup
+
 ```{r setup}
+# import packages
 library(tidyverse)
 library(janitor)
 library(readr)
 
-treatments <- read_tsv("C:/Users/Spencer_C/Desktop/NRTSy/RPT_TREATMENT_DETAILS_VW_DATA_VIEW.tsv") |>
+# custom functions
+skimmer <- function(layer, n) {
+  sapply(layer, function(x) {
+    uniq <- unique(x)
+    if (length(uniq) < n)
+      uniq_values = sort(uniq)
+    else
+      length(uniq)
+  })
+}
+
+# import data
+treatments <- read_tsv("NRTSy/RPT_TREATMENT_DETAILS_VW_DATA_VIEW.tsv") |>
   clean_names()
 ```
 
 ```{r explore}
+skimmer(treatments, 50)
+
 multis <- treatments |>
   count(treatment_date, infestation_area_id, scientific_name, sort  = TRUE) |>
   filter(n != 1) |>
@@ -25,6 +41,16 @@ multis <- treatments |>
 
 semi_join(treatments, multis) |>
   view()
+
+unique(treatments$active_adjuvant) 
+
+treatments |>
+  mutate(active_adjuvant = strsplit(active_adjuvant, '|'),
+         active_ingredient = strsplit(active_ingredient, '|')) |>
+  unnest(active_adjuvant, active_ingredient)
+  
+  # select(active_adjuvant) |>
+  separate_wider_delim(active_adjuvant, '|', names = c('adjuvant1','adjuvant2','adjuvant3'), too_few = 'align_start') |>
+  
   
 ```
-
