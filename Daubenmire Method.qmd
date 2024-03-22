@@ -12,7 +12,12 @@ library(tidyverse)
 cc <- data.frame(upper_limit = c(0, 1, 5, 25, 50, 75, 95, 100), 
            value = c(0, 0.5, 3, 16, 38, 63, 86, 98))
 
-data.frame(avg_off = rnorm(100, mean = 45, sd = 5),
+estis <- data.frame(estimation = rnorm(100, mean = 45, sd = 5),
            realval = 50)
+
+estis[estis$estimation < 0] <- 0
+estis[estis$estimation > 100] <- 100
+
+left_join(estis, cc, join_by(closest(estimation <= upper_limit)))
 ```
 
