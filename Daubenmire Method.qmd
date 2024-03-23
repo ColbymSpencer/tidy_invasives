@@ -2,22 +2,83 @@
 title: "daubenmire_method_eval"
 format: html
 editor: visual
+editor_options: 
+  chunk_output_type: console
 ---
 
 Daubenmire Method
+
 ```{r}
 # import libraries
 library(tidyverse)
 
 cc <- data.frame(upper_limit = c(0, 1, 5, 25, 50, 75, 95, 100), 
-           value = c(0, 0.5, 3, 16, 38, 63, 86, 98))
+           dval = c(0, 0.5, 3, 16, 38, 63, 86, 98))
 
-estis <- data.frame(estimation = rnorm(100, mean = 45, sd = 5),
+estis <- data.frame(estimation = round(rnorm(100, mean = 45, sd = 5)),
            realval = 50)
 
 estis[estis$estimation < 0] <- 0
 estis[estis$estimation > 100] <- 100
 
-left_join(estis, cc, join_by(closest(estimation <= upper_limit)))
+left_join(estis, cc, join_by(closest(estimation <= upper_limit))) |>
+  select(realval, estimation, dval) |>
+  summarise(mean(estimation), mean(dval))
+```
+
+```{r}
+# avg percent off for estimator, standard deviation of estimation, 
+off_score <- -50:50
+sdev <- rep_len(1:15, 101)
+real_score <- 0:100
+
+tibble(off_score, sdev, real_score) |>
+  expand(real_score, off_score, sdev) |>
+  mutate(
+    avg_est_100 = mean(round(rnorm(100, mean = real_score+off_score, sdev)))) |>
+  left_join(cc, join_by(closest(avg_est_100 <= upper_limit))) |>
+  view()
+```
+
+```{r}
+# avg percent off for estimator, standard deviation of estimation, 
+off_score <- -50:50
+real_score <- 0:100
+
+
+scores <- tibble(real_score, off_score) |>
+  expand(real_score, off_score) |>
+  mutate(estimation = real_score + off_score) |>
+  mutate(estimation = case_when(estimation > 100 ~ 100,
+                                estimation < 0 ~ 0,
+                                .default = estimation)) |> 
+  left_join(cc, join_by(closest(estimation <= upper_limit))) |>
+  select(-upper_limit) |>
+  mutate(
+    est_score = abs(real_score - abs(estimation)),
+    daub_score = abs(real_score - abs(dval)),
+    closer_val = case_when(
+      est_score < daub_score ~ 'estimation',
+      est_score == daub_score ~ 'tie',
+      .default = 'daubenmire'))
+
+scores |>
+  count(off_score, closer_val) |>
+  ggplot() +
+  geom_area(aes(x= off_score, y = n, fill = closer_val))
+
+scores |>
+  count(off_score, closer_val) |>
+  group_by(off_score) |>
+  mutate(preferred = case_when(max(n) == n ~ closer_val)) |>
+  filter(!is.na(preferred)) |>
+  ggplot() +
+  geom_point(aes(x = off_score, color = preferred, y =5), )
+  
+  # count(off_score, sort = TRUE)
+  
+scores |>
+  ggplot() +
+  geom_point(aes(x = real_score, y = off_score, color = closer_val))
 ```
 
