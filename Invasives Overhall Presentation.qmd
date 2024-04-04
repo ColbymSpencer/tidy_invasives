@@ -1,0 +1,55 @@
+---
+title: "Invasives Overhall"
+author: "CS"
+format: revealjs
+editor: visual
+---
+
+## Current System
+
+Survey -> Treat
+
+- Contractors, park staff, volunteers, and americorps survey 'infestations'
+- Return to treat with appropriate herbicide
+
+NRTS
+
+- point data only
+- 
+
+## infestations
+
+- canopy levels may differ
+- treatments may differ
+
+## Drawbacks
+
+People treating an infestation have to eyeball infestation boundary when revisiting
+
+- contractors
+- OPS staff and Americorps
+
+Ambiguous infestation composition
+
+- does composition change after treatment
+- affects herbicide requirements for effective treatment
+-   
+
+
+## New System
+
+Monitor with areas not points
+
+- can see growth / shrinkage of infestation
+- Monitor by species population, not 'infestation'
+
+
+## Cost Comparison
+
+## Code
+
+When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```

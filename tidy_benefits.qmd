@@ -28,6 +28,10 @@ skimmer <- function(layer, n) {
 # import data
 treatments <- read_tsv("NRTSy/RPT_TREATMENT_DETAILS_VW_DATA_VIEW.tsv") |>
   clean_names()
+
+infestations <- readxl::read_xls("invasive_plant_infestations.xls") |>
+  clean_names()
+
 ```
 
 ```{r explore}
@@ -52,6 +56,15 @@ treatments |>
   # select(active_adjuvant) |>
   separate_wider_delim(active_adjuvant, '|', names = c('adjuvant1','adjuvant2','adjuvant3'), too_few = 'align_start') |>
   
-  
+```
+
+
+```{r explore infestations}
+infestations |>
+  filter(park_name == 'Alfred B. Maclay Gardens State Park') |>
+  select(dominant_species, species_observed) |>
+    # count(dominant_species, sort = TRUE)
+  separate_longer_delim(species_observed, '/') |>
+  count(species_observed, sort = TRUE)
 ```
 

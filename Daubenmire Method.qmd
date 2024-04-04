@@ -80,5 +80,11 @@ scores |>
 scores |>
   ggplot() +
   geom_point(aes(x = real_score, y = off_score, color = closer_val))
+
+scores |>
+  filter(off_score < 30, off_score > -30) |>
+  count(closer_val)
+  ggplot() +
+  geom_point(aes(x = real_score, y = off_score, color = closer_val))
 ```
 
